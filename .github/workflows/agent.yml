@@ -1,0 +1,28 @@
+name: Agente GPT DevOps
+
+on:
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Instalar dependências
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install openai azure-identity azure-mgmt-web
+
+      - name: Executar agente GPT
+        run: |
+          python agent.py
